@@ -108,6 +108,11 @@ const UICtrl = (function() {
             listContainer.appendChild(li);
             console.log('Done');
 
+        },
+
+        clearInputFields: function() {
+            document.querySelector(UISelectors.nameInput).value = '';
+            document.querySelector(UISelectors.caloriesInput).value = '';
         }
     };
 })();
@@ -137,6 +142,9 @@ const App = (function(ItemCtrl, UICtrl) {
 
         // Add Item to UI List
         UICtrl.addListItem(newItem);
+
+        // Clear UI Input
+        UICtrl.clearInputFields();
     };
     
     // PUBLIC METHODS
