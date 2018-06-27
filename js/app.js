@@ -20,7 +20,12 @@ const ItemCtrl = (function() {
         totalCalories: 0
     };
 
+    // PUBLIC METHODS
     return {
+        getItems: function() {
+            return data.items;
+        },
+
         logData: function() {
             return data;
         }
@@ -30,10 +35,16 @@ const ItemCtrl = (function() {
 // UI Ctrl
 const UICtrl = (function() {
     
+    // PUBLIC METHODS
+    return {
+
+    };
 })();
 
 // App Ctrl
 const App = (function(ItemCtrl, UICtrl) {
+    
+    // PUBLIC METHODS
     return {
         init: function() {
             console.log('init app');
