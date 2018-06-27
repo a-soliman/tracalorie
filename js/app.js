@@ -32,6 +32,8 @@ const ItemCtrl = (function() {
                 totalCalories += item.calories;
             });
 
+            // Set total Cal to the datastructure
+            data.totalCalories = totalCalories;
             return totalCalories;
         },
 
@@ -177,6 +179,12 @@ const App = (function(ItemCtrl, UICtrl) {
 
             // Populate list with items
             UICtrl.populateItemList(items);
+
+            // Get totalCalories
+            const totalCalories = ItemCtrl.getTotalCalories();
+            
+            // Update totalCalories in UI
+            UICtrl.updateTotalCalories(totalCalories);
 
             // Load Event listeners
             loadEventListeners();
