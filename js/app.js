@@ -27,3 +27,8 @@ const ItemCtrl = (function() {
     };
 })();
 
+// UI Ctrl
+const UICtrl = (function() {
+    
+})();
+
