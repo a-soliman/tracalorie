@@ -37,7 +37,22 @@ const UICtrl = (function() {
     
     // PUBLIC METHODS
     return {
+        populateItemList: function(items) {
+            const listContainer = document.querySelector('#item-list');
+            let html = '';
 
+            items.forEach( (item) => {
+                html+= `
+                <li class="collection-item" id="item-${item.id}">
+                    <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
+                    <a href="#" class="secondary-content">
+                        <i class="fa fa-edit"></i>
+                    </a>
+                </li>
+                `;
+            });
+            listContainer.innerHTML = html;
+        }
     };
 })();
 
@@ -48,6 +63,13 @@ const App = (function(ItemCtrl, UICtrl) {
     return {
         init: function() {
             console.log('init app');
+            
+            // Fetch Items from datastructure
+            const items = ItemCtrl.getItems();
+
+            // Populate list with items
+            UICtrl.populateItemList(items);
+
         }
     };
 
