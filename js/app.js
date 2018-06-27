@@ -32,3 +32,14 @@ const UICtrl = (function() {
     
 })();
 
+// App Ctrl
+const App = (function(ItemCtrl, UICtrl) {
+    return {
+        init: function() {
+            console.log('init app');
+        }
+    };
+
+})(ItemCtrl, UICtrl);
+
+App.init();
