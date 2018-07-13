@@ -60,6 +60,19 @@ const ItemCtrl = (function() {
             return newItem;
         },
 
+        updateItem: function(name, calories) {
+            // Calories to num
+            calories = parseInt(calories);
+
+            // Get the item
+            const item = this.getItemById(data.currentItem.id);
+            
+            // Update the item data
+            item.name = name;
+            item.calories = calories;
+            return item;
+        },
+
         getCurrentItem: function() {
             return data.currentItem;
         },
@@ -80,6 +93,7 @@ const UICtrl = (function() {
     // 
     const UISelectors = {
         itemList: '#item-list',
+        listItems: '#item-list li',
         addBtn: '.add-btn',
         updateBtn: '.update-btn',
         deleteBtn: '.delete-btn',
@@ -150,6 +164,25 @@ const UICtrl = (function() {
             listContainer.appendChild(li);
             console.log('Done');
 
+        },
+
+        updateListItem: function(item) {
+            let listItems = document.querySelectorAll(UISelectors.listItems);
+
+            // Turn nodelist to array
+            listItems = Array.from(listItems);
+
+            listItems.forEach( listItem => {
+                const itemId = listItem.getAttribute('id');
+                if ( itemId == `item-${item.id}` ) {
+                    document.querySelector(`#${itemId}`).innerHTML = `
+                        <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
+                        <a href="#" class="secondary-content">
+                            <i class="edit-item fa fa-edit"></i>
+                        </a>
+                    `;
+                }
+            });
         },
 
         addItemToForm: function() {
@@ -242,6 +275,22 @@ const App = (function(ItemCtrl, UICtrl) {
 
     const itemUpdateSubmit = function(e) {
         e.preventDefault();
+        // Get item input
+        const input = UICtrl.getformInput();
+        
+        // Update Item
+        const updatedItem = ItemCtrl.updateItem(input.name, input.calories);
+
+        // Update UI
+        UICtrl.updateListItem(updatedItem);
+
+        // Get Total Calories
+        const totalCalories = ItemCtrl.getTotalCalories();
+        
+        // Update the Total Calories in UI
+        UICtrl.updateTotalCalories(totalCalories);
+
+        UICtrl.clearEditState();
     };
     
     // PUBLIC METHODS
