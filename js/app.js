@@ -225,6 +225,9 @@ const App = (function(ItemCtrl, UICtrl) {
 
         // Update Item event
         document.querySelector(UISelectors.updateBtn).addEventListener('click', itemUpdateSubmit);
+
+        // Back Event
+        document.querySelector(UISelectors.backBtn).addEventListener('click', backClick);
     };
 
     const itemAddSubmit = function(e) {
@@ -291,6 +294,11 @@ const App = (function(ItemCtrl, UICtrl) {
         UICtrl.updateTotalCalories(totalCalories);
 
         UICtrl.clearEditState();
+    };
+
+    const backClick = function(e) {
+        UICtrl.clearEditState();
+        e.preventDefault();
     };
     
     // PUBLIC METHODS
