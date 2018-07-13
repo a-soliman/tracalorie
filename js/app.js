@@ -26,6 +26,10 @@ const ItemCtrl = (function() {
             return data.items;
         },
 
+        getItemById: function(id) {
+            return data.items.filter( item => item.id === id )[0] || null;
+        },
+
         getTotalCalories: function() {
             let totalCalories = 0;
             data.items.forEach((item) => {
@@ -56,6 +60,14 @@ const ItemCtrl = (function() {
             return newItem;
         },
 
+        getCurrentItem: function() {
+            return data.currentItem;
+        },
+
+        setCurrentItem: function(item) {
+            data.currentItem = item;
+        },
+
         logData: function() {
             return data;
         }
@@ -69,6 +81,9 @@ const UICtrl = (function() {
     const UISelectors = {
         itemList: '#item-list',
         addBtn: '.add-btn',
+        updateBtn: '.update-btn',
+        deleteBtn: '.delete-btn',
+        backBtn: '.back-btn',
         nameInput: '#item-name',
         caloriesInput: '#item-calories',
         totalCaloriesContainer: '.total-calories'
@@ -91,6 +106,21 @@ const UICtrl = (function() {
                 `;
             });
             listContainer.innerHTML = html;
+        },
+
+        clearEditState: function() {
+            UICtrl.clearInputFields();
+            document.querySelector(UISelectors.updateBtn).style.display = 'none';
+            document.querySelector(UISelectors.deleteBtn).style.display = 'none';
+            document.querySelector(UISelectors.backBtn).style.display = 'none';
+            document.querySelector(UISelectors.addBtn).style.display = 'inline';
+        },
+
+        showEditState: function() {
+            document.querySelector(UISelectors.updateBtn).style.display = 'inline';
+            document.querySelector(UISelectors.deleteBtn).style.display = 'inline';
+            document.querySelector(UISelectors.backBtn).style.display = 'inline';
+            document.querySelector(UISelectors.addBtn).style.display = 'none';
         },
 
         getUISelectors: function() {
@@ -122,6 +152,13 @@ const UICtrl = (function() {
 
         },
 
+        addItemToForm: function() {
+            document.querySelector(UISelectors.nameInput).value = ItemCtrl.getCurrentItem().name;
+            document.querySelector(UISelectors.caloriesInput).value = ItemCtrl.getCurrentItem().calories;
+
+            UICtrl.showEditState();
+        },
+
         updateTotalCalories: function(totalCalories) {
             document.querySelector(UISelectors.totalCaloriesContainer).innerText = totalCalories;
         },
@@ -142,6 +179,19 @@ const App = (function(ItemCtrl, UICtrl) {
         
         // Add item event
         document.querySelector(UISelectors.addBtn).addEventListener('click', itemAddSubmit);
+        
+        // Disable submit on 'enter'
+        document.addEventListener('keypress', e => {
+            if ( e.keyCode == 13 || e.which == 13 ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        // Edit Icon click even
+        document.querySelector(UISelectors.itemList).addEventListener('click', itemUpdateClick);
+
+        // Update Item event
+        document.querySelector(UISelectors.updateBtn).addEventListener('click', itemUpdateSubmit);
     };
 
     const itemAddSubmit = function(e) {
@@ -168,11 +218,39 @@ const App = (function(ItemCtrl, UICtrl) {
         // Clear UI Input
         UICtrl.clearInputFields();
     };
+
+    const itemUpdateClick = function(e) {
+        e.preventDefault();
+        if ( !e.target.classList.contains('edit-item') ) return;
+
+        // get the list item id
+        const listId = e.target.parentNode.parentNode.id;
+
+        // clear out the id
+        const id = parseInt(listId.split('-')[1]);
+
+        // Get Item 
+        const itemToEdit = ItemCtrl.getItemById(id);
+        
+        // Set current item
+        ItemCtrl.setCurrentItem(itemToEdit);
+
+        // Add item to form
+        UICtrl.addItemToForm();
+
+    };
+
+    const itemUpdateSubmit = function(e) {
+        e.preventDefault();
+    };
     
     // PUBLIC METHODS
     return {
         init: function() {
             console.log('init app');
+
+            // Clear Edit State
+            UICtrl.clearEditState();
             
             // Fetch Items from datastructure
             const items = ItemCtrl.getItems();
