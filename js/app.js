@@ -1,4 +1,38 @@
 // Storage Ctrl
+const StorageCtrl = (function(){
+    
+    return {
+
+        storeItem: function(item) {
+            let storedItems = JSON.parse(localStorage.getItem('items')) || [];
+            storedItems.push(item);
+            localStorage.setItem('items', JSON.stringify(storedItems));    
+        },
+
+        getItems: function() {
+            return JSON.parse(localStorage.getItem('items')) || [];
+        },
+
+        deleteItem: function(id) { 
+            let storedItems = JSON.parse(localStorage.getItem('items')) || [];
+            storedItems = storedItems.filter( item => item.id !== id );
+            localStorage.setItem('items', JSON.stringify(storedItems)); 
+        },
+
+        updateItem: function(updatedItem) {
+            let storedItems = JSON.parse(localStorage.getItem('items')) || [];
+            for ( let i = 0; i < storedItems.length; i++ ) {
+                let currentItem = storedItems[i];
+                if ( currentItem.id === updatedItem.id ) {
+                    storedItems[i] = updatedItem;
+                }
+            }
+
+            localStorage.setItem('items', JSON.stringify(storedItems));
+        }
+    };
+
+})();
 
 // Item Ctrl
 const ItemCtrl = (function() {
@@ -11,11 +45,7 @@ const ItemCtrl = (function() {
 
     // Data Structure
     const data = {
-        items: [
-            {id: 0, name: 'Steak Dinner', calories: 600},
-            {id: 1, name: 'Eggs', calories: 120},
-            {id: 2, name: 'Cookie', calories: 300}
-        ],
+        items: StorageCtrl.getItems(),
         currentItem: null,
         totalCalories: 0
     };
@@ -219,7 +249,7 @@ const UICtrl = (function() {
 })();
 
 // App Ctrl
-const App = (function(ItemCtrl, UICtrl) {
+const App = (function(ItemCtrl, UICtrl, StorageCtrl) {
 
     // Load event listeners
     const loadEventListeners = function() {
@@ -263,6 +293,9 @@ const App = (function(ItemCtrl, UICtrl) {
         // AddItem
         const newItem = ItemCtrl.addItem(input.name, input.calories);
 
+        // Save to Local host storage
+        StorageCtrl.storeItem(newItem);
+
         // Add Item to UI List
         UICtrl.addListItem(newItem);
 
@@ -305,6 +338,9 @@ const App = (function(ItemCtrl, UICtrl) {
         // Update Item
         const updatedItem = ItemCtrl.updateItem(input.name, input.calories);
 
+        // Update in DB
+        StorageCtrl.updateItem(updatedItem);
+
         // Update UI
         UICtrl.updateListItem(updatedItem);
 
@@ -323,6 +359,9 @@ const App = (function(ItemCtrl, UICtrl) {
         
         // Delete from data structure
         ItemCtrl.deleteItem(currentItem.id);
+
+        // Delete from DB
+        StorageCtrl.deleteItem(currentItem.id);
 
         // Update UI
         UICtrl.deleteListItem(currentItem.id);
@@ -368,7 +407,7 @@ const App = (function(ItemCtrl, UICtrl) {
             UICtrl.clearEditState();
             
             // Fetch Items from datastructure
-            const items = ItemCtrl.getItems();
+            const items = StorageCtrl.getItems();
 
             // Populate list with items
             UICtrl.populateItemList(items);
@@ -384,6 +423,6 @@ const App = (function(ItemCtrl, UICtrl) {
         }
     };
 
-})(ItemCtrl, UICtrl);
+})(ItemCtrl, UICtrl, StorageCtrl);
 
 App.init();
